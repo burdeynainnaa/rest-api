@@ -5,7 +5,7 @@ class Tournament(models.Model):
     title = models.CharField(max_length=200)
     game = models.CharField(max_length=100)
     status = models.CharField(max_length=50, default="registration")
-    organizer_id = models.IntegerField()
+    organizer_id = models.PositiveIntegerField()
 
     def __str__(self):
         return self.title
