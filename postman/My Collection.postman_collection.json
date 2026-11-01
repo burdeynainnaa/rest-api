@@ -83,20 +83,115 @@
       "response": []
     },
     {
-      "name": "Get Tournaments",
+      "name": "Register User",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"username\": \"student_test\",\r\n  \"email\": \"student@example.com\",\r\n  \"password\": \"SecurePassword123\",\r\n  \"password_confirmation\": \"SecurePassword123\",\r\n  \"first_name\": \"Інна\",\r\n  \"last_name\": \"Бурдейна\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/auth/register/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "auth",
+            "register",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Obtain JWT Token (Login)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"username\": \"student_test\",\r\n  \"password\": \"SecurePassword123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/auth/login/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "auth",
+            "login",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Refresh JWT Token",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"refresh\": \"{{json_web_token_1bhl}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/auth/token/refresh/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "auth",
+            "token",
+            "refresh",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Tournaments List",
       "request": {
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{base_url}}/api/tournaments/",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "tournaments",
-            ""
-          ]
+          "raw": ""
         }
       },
       "response": []
@@ -115,11 +210,21 @@
     {
       "name": "Create Tournament",
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{json_web_token_0tcw}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "POST",
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"title\": \"Cyber Championship\",\r\n    \"game\": \"Dota 2\",\r\n    \"status\": \"registration\",\r\n    \"organizer_id\": 1\r\n}",
+          "raw": "{\r\n  \"title\": \"Kyiv Cup 2026\",\r\n  \"start_date\": \"2026-06-01\",\r\n  \"end_date\": \"2026-06-05\",\r\n  \"game\": \"CS2\",\r\n  \"organizer_id\": 1\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -127,10 +232,15 @@
           }
         },
         "url": {
-          "raw": "{{base_url}}/api/tournaments/",
+          "raw": "http://127.0.0.1:8000/api/tournaments/",
+          "protocol": "http",
           "host": [
-            "{{base_url}}"
+            "127",
+            "0",
+            "0",
+            "1"
           ],
+          "port": "8000",
           "path": [
             "api",
             "tournaments",
@@ -141,13 +251,47 @@
       "response": []
     },
     {
-      "name": "Partial Update Tournament",
+      "name": "Update Tournament Detail (Full)",
       "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/tournaments/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "tournaments",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Tournament (Partial)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{json_web_token_13ir}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "PATCH",
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"status\": \"ongoing\"\r\n}",
+          "raw": "{\r\n  \"title\": \"New Title Only\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -155,79 +299,15 @@
           }
         },
         "url": {
-          "raw": "{{base_url}}/api/tournaments/1/",
+          "raw": "http://127.0.0.1:8000/api/tournaments/2/",
+          "protocol": "http",
           "host": [
-            "{{base_url}}"
+            "127",
+            "0",
+            "0",
+            "1"
           ],
-          "path": [
-            "api",
-            "tournaments",
-            "1",
-            ""
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Update Tournament",
-      "request": {
-        "method": "PUT",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n    \"title\": \"Updated Championship Name\",\r\n    \"game\": \"Dota 2\",\r\n    \"status\": \"ongoing\",\r\n    \"organizer_id\": 1\r\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{base_url}}/api/tournaments/1/",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "tournaments",
-            "1",
-            ""
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Delete Tournament (Error)",
-      "request": {
-        "method": "DELETE",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/api/tournaments/1/",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "tournaments",
-            "1",
-            ""
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Delete Tournament (Success)",
-      "request": {
-        "method": "DELETE",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/api/tournaments/2/",
-          "host": [
-            "{{base_url}}"
-          ],
+          "port": "8000",
           "path": [
             "api",
             "tournaments",
@@ -239,7 +319,42 @@
       "response": []
     },
     {
-      "name": "Get Teams",
+      "name": "Delete Tournament",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{json_web_token_13ir}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/tournaments/3/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "tournaments",
+            "3",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Teams List",
       "request": {
         "method": "GET",
         "header": [],
@@ -263,11 +378,21 @@
     {
       "name": "Create Team",
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{json_web_token_198t}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "POST",
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"name\": \"Team Spirit\",\r\n    \"tournament\": 1\r\n}",
+          "raw": "{\r\n  \"name\": \"Team Alpha\",\r\n  \"tournament\": 2\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -275,10 +400,15 @@
           }
         },
         "url": {
-          "raw": "{{base_url}}/api/teams/",
+          "raw": "http://127.0.0.1:8000/api/teams/",
+          "protocol": "http",
           "host": [
-            "{{base_url}}"
+            "127",
+            "0",
+            "0",
+            "1"
           ],
+          "port": "8000",
           "path": [
             "api",
             "teams",
@@ -289,15 +419,39 @@
       "response": []
     },
     {
-      "name": "Delete Team (Error: has players)",
+      "name": "Update Team (Full)",
       "request": {
-        "method": "DELETE",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{json_web_token_198t}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
         "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Team Alpha Updated\",\r\n  \"tournament\": 2\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
         "url": {
-          "raw": "{{base_url}}/api/teams/2/",
+          "raw": "http://127.0.0.1:8000/api/teams/2/",
+          "protocol": "http",
           "host": [
-            "{{base_url}}"
+            "127",
+            "0",
+            "0",
+            "1"
           ],
+          "port": "8000",
           "path": [
             "api",
             "teams",
@@ -309,20 +463,82 @@
       "response": []
     },
     {
-      "name": "Get Players",
+      "name": "Update Team (Partial)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{json_web_token_121x}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/teams/2/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "teams",
+            "2",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Team",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{json_web_token_121x}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/teams/1/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "teams",
+            "1",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Players List",
       "request": {
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{base_url}}/api/players/",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "players",
-            ""
-          ]
+          "raw": ""
         }
       },
       "response": []
@@ -341,11 +557,21 @@
     {
       "name": "Create Player",
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{json_web_token_0udr}}",
+              "type": "string"
+            }
+          ]
+        },
         "method": "POST",
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"nickname\": \"Yatoro\",\r\n    \"role\": \"Carry\",\r\n    \"team\": 2\r\n}",
+          "raw": "{\r\n  \"name\": \"Олександр\",\r\n  \"nickname\": \"monkey\",\r\n  \"team\": 1\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -353,13 +579,132 @@
           }
         },
         "url": {
-          "raw": "{{base_url}}/api/players/",
+          "raw": "http://127.0.0.1:8000/api/players/",
+          "protocol": "http",
           "host": [
-            "{{base_url}}"
+            "127",
+            "0",
+            "0",
+            "1"
           ],
+          "port": "8000",
           "path": [
             "api",
             "players",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Player (Full)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{json_web_token_0ew0}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"nickname\": \"mones\",\r\n    \"team\": \"2\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/players/2/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "players",
+            "2",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Player (Partial)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{json_web_token_11v5}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/players/2/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "players",
+            "2",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Player",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{json_web_token_1259}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/players/1/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "players",
+            "1",
             ""
           ]
         }
@@ -371,6 +716,50 @@
     {
       "key": "base_url",
       "value": ""
+    },
+    {
+      "key": "json_web_token_1bhl",
+      "secret": true
+    },
+    {
+      "key": "json_web_token_0j3c",
+      "secret": true
+    },
+    {
+      "key": "json_web_token_0bho",
+      "secret": true
+    },
+    {
+      "key": "json_web_token_0tcw",
+      "secret": true
+    },
+    {
+      "key": "json_web_token_13ir",
+      "secret": true
+    },
+    {
+      "key": "json_web_token_198t",
+      "secret": true
+    },
+    {
+      "key": "json_web_token_121x",
+      "secret": true
+    },
+    {
+      "key": "json_web_token_0udr",
+      "secret": true
+    },
+    {
+      "key": "json_web_token_0ew0",
+      "secret": true
+    },
+    {
+      "key": "json_web_token_11v5",
+      "secret": true
+    },
+    {
+      "key": "json_web_token_1259",
+      "secret": true
     }
   ]
 }
