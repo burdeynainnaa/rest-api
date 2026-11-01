@@ -5,6 +5,11 @@ from rest_framework import serializers
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(
+        required=False, allow_blank=True, allow_null=True
+    )
+    last_name = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+
     password = serializers.CharField(write_only=True, min_length=8)
     password_confirmation = serializers.CharField(write_only=True)
 
@@ -25,14 +30,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         }
 
     def validate_password(self, value):
-        """
-        Перевірка складності пароля:
-        - Мінімум 8 символів (також перевіряється min_length=8)
-        - Хоча б одна велика літера (A-Z)
-        - Хоча б одна мала літера (a-z)
-        - Хоча б одна цифра (0-9)
-        - Хоча б один спеціальний символ
-        """
         if not re.search(r"[A-Z]", value):
             raise serializers.ValidationError(
                 "Пароль повинен містити хоча б одну велику літеру (A-Z)."
