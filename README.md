@@ -136,6 +136,8 @@ production deployment.
 
 ## Архітектура REST API
 
+## Архітектура REST API
+
 ### Турніри
 
 - **Отримати список усіх турнірів**
@@ -146,9 +148,10 @@ production deployment.
     [
       {
         "id": 1,
-        "title": "Cyber Championship",
-        "game": "Dota 2",
-        "status": "registration",
+        "title": "Kyiv Cup 2026",
+        "start_date": "2026-06-01",
+        "end_date": "2026-06-05",
+        "game": "CS2",
         "organizer_id": 1,
         "teams": []
       }
@@ -162,9 +165,10 @@ production deployment.
     ```json
     {
       "id": 1,
-      "title": "Cyber Championship",
-      "game": "Dota 2",
-      "status": "registration",
+      "title": "Kyiv Cup 2026",
+      "start_date": "2026-06-01",
+      "end_date": "2026-06-05",
+      "game": "CS2",
       "organizer_id": 1,
       "teams": []
     }
@@ -175,9 +179,10 @@ production deployment.
   * **Request Body:**
     ```json
     {
-      "title": "Cyber Championship",
-      "game": "Dota 2",
-      "status": "registration",
+      "title": "Kyiv Cup 2026",
+      "start_date": "2026-06-01",
+      "end_date": "2026-06-05",
+      "game": "CS2",
       "organizer_id": 1
     }
     ```
@@ -188,9 +193,10 @@ production deployment.
   * **Request Body:**
     ```json
     {
-      "title": "Updated Championship Name",
-      "game": "Dota 2",
-      "status": "ongoing",
+      "title": "Kyiv Cup 2026 Updated",
+      "start_date": "2026-06-01",
+      "end_date": "2026-06-07",
+      "game": "CS2",
       "organizer_id": 1
     }
     ```
@@ -201,7 +207,7 @@ production deployment.
   * **Request Body:**
     ```json
     {
-      "status": "ongoing"
+      "title": "New Title Only"
     }
     ```
   * **Response Status:** 200 OK
@@ -212,7 +218,7 @@ production deployment.
   * **Response Body:**
     ```json
     {
-      "error": "Неможливо видалити турнір 'Cyber Championship', оскільки до нього прив'язано команд: 1."
+      "error": "Неможливо видалити турнір 'Kyiv Cup 2026', оскільки до нього прив'язано команд: 1."
     }
     ```
 
@@ -231,8 +237,8 @@ production deployment.
     [
       {
         "id": 2,
-        "name": "Team Spirit",
-        "tournament": 1,
+        "name": "Team Alpha",
+        "tournament": 2,
         "players": []
       }
     ]
@@ -245,8 +251,8 @@ production deployment.
     ```json
     {
       "id": 2,
-      "name": "Team Spirit",
-      "tournament": 1,
+      "name": "Team Alpha",
+      "tournament": 2,
       "players": []
     }
     ```
@@ -256,11 +262,22 @@ production deployment.
   * **Request Body:**
     ```json
     {
-      "name": "Team Spirit",
-      "tournament": 1
+      "name": "Team Alpha",
+      "tournament": 2
     }
     ```
   * **Response Status:** 201 Created
+
+- **Повністю оновити команду**
+  * **Method:** PUT
+  * **Request Body:**
+    ```json
+    {
+      "name": "Team Alpha Updated",
+      "tournament": 2
+    }
+    ```
+  * **Response Status:** 200 OK
 
 - **Видалити команду (Помилка: якщо є гравці)**
   * **Method:** DELETE
@@ -268,7 +285,7 @@ production deployment.
   * **Response Body:**
     ```json
     {
-      "error": "Неможливо видалити команду 'Team Spirit', оскільки в ній зареєстровано гравців: 1."
+      "error": "Неможливо видалити команду 'Team Alpha', оскільки в ній зареєстровано гравців: 1."
     }
     ```
 
@@ -287,9 +304,9 @@ production deployment.
     [
       {
         "id": 1,
-        "nickname": "Yatoro",
-        "role": "Carry",
-        "team": 2
+        "name": "Олександр",
+        "nickname": "monkey",
+        "team": 1
       }
     ]
     ```
@@ -301,9 +318,9 @@ production deployment.
     ```json
     {
       "id": 1,
-      "nickname": "Yatoro",
-      "role": "Carry",
-      "team": 2
+      "name": "Олександр",
+      "nickname": "monkey",
+      "team": 1
     }
     ```
 
@@ -312,46 +329,74 @@ production deployment.
   * **Request Body:**
     ```json
     {
-      "nickname": "Yatoro",
-      "role": "Carry",
-      "team": 2
+      "name": "Олександр",
+      "nickname": "monkey",
+      "team": 1
     }
     ```
   * **Response Status:** 201 Created
 
+- **Повністю оновити гравця**
+  * **Method:** PUT
+  * **Request Body:**
+    ```json
+    {
+      "nickname": "mones",
+      "team": "2"
+    }
+    ```
+  * **Response Status:** 200 OK
 
 ## Схема бази даних
 ![схема бд](image.png)
 
-## Як запустити проєкт
-1. Клонуйте репозиторій:
-```bash
-git clone https://github.com/burdeynainnaa/rest.api
-cd rest.api
-```
-2. Створіть та активуйте віртуальне середовище:
-```bash
-python -m venv venv
-source venv\Scripts\activate
-```
-3. Встановіть залежності:
-```bash
-pip install -r requirements.txt
-```
-4. Застосуйте міграції бази даних:
-```bash
-python manage.py makemigrations
-python manage.py migrate
-```
-5. Запустіть локальний сервер:
-```bash
-python manage.py runserver
-```
 
-## Використання штучного інтелекту
-- **Які інструменти ви використовували?**  
-  Штучний інтелект (gemini)
-- **Що саме зробили з їхньою допомогою?**  
-  ШІ допоміг написати клієнтську частину (фронтенд), підказував із виправленням помилок на бекенді та допоміг розібратися зі структурою Postman.
-- **Як перевірили результат?**  
-  Результат перевірено за допомогою офіційного скрипта `python check_submission.py`, проходження статичного аналізу й форматування, а також шляхом ручного тестування всіх ендпоінтів через Postman і перевірки зв'язку фронтенду з бекендом у браузері.
+## Авторизація та JWT
+
+Проєкт використовує бібліотеку `djangorestframework-simplejwt` для токен-автентифікації та розмежування прав доступу.
+
+### Заголовки запитів (Headers)
+Для виконання захищених запитів (`POST`, `PUT`, `PATCH`, `DELETE`) у заголовку (`Headers`) необхідно передавати дійсний access-токен у такому форматі:
+* **Authorization:** `Bearer <ваш_access_token>`
+
+### Ендпоінти авторизації та користувачів (`/api/auth/`)
+
+- **Реєстрація користувача**
+  * **Method:** POST
+  * **Endpoint:** `/api/auth/register/`
+  * **Request Body:**
+    ```json
+    {
+      "username": "student_test",
+      "email": "student@example.com",
+      "password": "SecurePassword123!",
+      "password_confirmation": "SecurePassword123!",
+      "first_name": "Інна",
+      "last_name": "Бурдейна"
+    }
+    ```
+  * **Validation:** Перевіряється заповнення обов'язкових полів, формат email, мінімальна довжина пароля (від 8 символів), збіг `password` та `password_confirmation`, а також складність пароля (наявність великих/малих літер, цифр та спеціальних символів).
+  * **Response Status:** 201 Created або 400 Bad Request (при помилках валідації).
+
+- **Отримання JWT токена (Логін)**
+  * **Method:** POST
+  * **Endpoint:** `/api/auth/login/`
+  * **Request Body:**
+    ```json
+    {
+      "username": "student_test",
+      "password": "SecurePassword123!"
+    }
+    ```
+  * **Response Status:** 200 OK (повертає пари `access` та `refresh` токенів).
+
+- **Оновлення Access-токена (Refresh)**
+  * **Method:** POST
+  * **Endpoint:** `/api/auth/token/refresh/`
+  * **Request Body:**
+    ```json
+    {
+      "refresh": "<ваш_refresh_token>"
+    }
+    ```
+  * **Response Status:** 200 OK (повертає новий `access`-токен).
