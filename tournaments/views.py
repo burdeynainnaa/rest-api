@@ -1,160 +1,79 @@
+import logging
 from django.shortcuts import get_object_or_404
-from rest_framework import status
+from rest_framework import status, viewsets
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-from rest_framework.views import APIView
+from drf_spectacular.utils import extend_schema, extend_schema_view
 
 from .models import Player, Team, Tournament
 from .serializers import PlayerSerializer, TeamSerializer, TournamentSerializer
 
+logger = logging.getLogger(__name__)
 
-class TournamentListCreateAPIView(APIView):
+
+@extend_schema_view(
+    list=extend_schema(summary="Отримати список усіх турнірів"),
+    create=extend_schema(summary="Створити новий турнір"),
+    retrieve=extend_schema(summary="Отримати деталі турніру"),
+    update=extend_schema(summary="Повністю оновити турнір"),
+    partial_update=extend_schema(summary="Частково оновити турнір"),
+    destroy=extend_schema(summary="Видалити турнір"),
+)
+class TournamentViewSet(viewsets.ModelViewSet):
+    queryset = Tournament.objects.all()
+    serializer_class = TournamentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def get(self, request):
-        tournaments = Tournament.objects.all()
-        serializer = TournamentSerializer(tournaments, many=True)
-        return Response(serializer.data)
+    def perform_create(self, serializer):
+        tournament = serializer.save()
+        logger.info(
+            f'Створено новий турнір: "{tournament.title}" (ID: {tournament.id})'
+        )
 
-    def post(self, request):
-        serializer = TournamentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class TournamentDetailAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, pk):
-        tournament = get_object_or_404(Tournament, pk=pk)
-        serializer = TournamentSerializer(tournament)
-        return Response(serializer.data)
-
-    def patch(self, request, pk):
-        tournament = get_object_or_404(Tournament, pk=pk)
-        serializer = TournamentSerializer(tournament, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def put(self, request, pk):
-        tournament = get_object_or_404(Tournament, pk=pk)
-        serializer = TournamentSerializer(tournament, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk):
-        tournament = get_object_or_404(Tournament, pk=pk)
-        if tournament.teams.exists():
-            return Response(
-                {
-                    "error": f"Неможливо видалити турнір '{tournament.title}', оскільки до нього прив'язано команд: {tournament.teams.count()}."
-                },
-                status=status.HTTP_400_BAD_REQUEST,
+    def perform_destroy(self, instance):
+        tournament_title = instance.title
+        tournament_id = instance.id
+        if instance.teams.exists():
+            raise ValidationError(
+                f"Неможливо видалити турнір '{tournament_title}', оскільки до нього прив'язано команд: {instance.teams.count()}."
             )
-        tournament.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        instance.delete()
+        logger.info(
+            f'Видалено турнір: "{tournament_title}" (ID: {tournament_id})'
+        )
 
 
-class TeamListCreateAPIView(APIView):
+@extend_schema_view(
+    list=extend_schema(summary="Отримати список усіх команд"),
+    create=extend_schema(summary="Створити нову команду"),
+    retrieve=extend_schema(summary="Отримати деталі команди"),
+    update=extend_schema(summary="Повністю оновити команду"),
+    partial_update=extend_schema(summary="Частково оновити команду"),
+    destroy=extend_schema(summary="Видалити команду"),
+)
+class TeamViewSet(viewsets.ModelViewSet):
+    queryset = Team.objects.all()
+    serializer_class = TeamSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def get(self, request):
-        teams = Team.objects.all()
-        serializer = TeamSerializer(teams, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = TeamSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class TeamDetailAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, pk):
-        team = get_object_or_404(Team, pk=pk)
-        serializer = TeamSerializer(team)
-        return Response(serializer.data)
-
-    def patch(self, request, pk):
-        team = get_object_or_404(Team, pk=pk)
-        serializer = TeamSerializer(team, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def put(self, request, pk):
-        team = get_object_or_404(Team, pk=pk)
-        serializer = TeamSerializer(team, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk):
-        team = get_object_or_404(Team, pk=pk)
-        if team.players.exists():
-            return Response(
-                {
-                    "error": f"Неможливо видалити команду '{team.name}', оскільки в ній зареєстровано гравців: {team.players.count()}."
-                },
-                status=status.HTTP_400_BAD_REQUEST,
+    def perform_destroy(self, instance):
+        if instance.players.exists():
+            raise ValidationError(
+                f"Неможливо видалити команду '{instance.name}', оскільки в ній зареєстровано гравців: {instance.players.count()}."
             )
-        team.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        instance.delete()
 
 
-class PlayerListCreateAPIView(APIView):
+@extend_schema_view(
+    list=extend_schema(summary="Отримати список усіх гравців"),
+    create=extend_schema(summary="Створити нового гравця"),
+    retrieve=extend_schema(summary="Отримати деталі гравця"),
+    update=extend_schema(summary="Повністю оновити гравця"),
+    partial_update=extend_schema(summary="Частково оновити гравця"),
+    destroy=extend_schema(summary="Видалити гравця"),
+)
+class PlayerViewSet(viewsets.ModelViewSet):
+    queryset = Player.objects.all()
+    serializer_class = PlayerSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-
-    def get(self, request):
-        players = Player.objects.all()
-        serializer = PlayerSerializer(players, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = PlayerSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class PlayerDetailAPIView(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
-
-    def get(self, request, pk):
-        player = get_object_or_404(Player, pk=pk)
-        serializer = PlayerSerializer(player)
-        return Response(serializer.data)
-
-    def patch(self, request, pk):
-        player = get_object_or_404(Player, pk=pk)
-        serializer = PlayerSerializer(player, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def put(self, request, pk):
-        player = get_object_or_404(Player, pk=pk)
-        serializer = PlayerSerializer(player, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk):
-        player = get_object_or_404(Player, pk=pk)
-        player.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
