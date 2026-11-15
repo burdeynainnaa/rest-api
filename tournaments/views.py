@@ -1,10 +1,9 @@
 import logging
-from django.shortcuts import get_object_or_404
-from rest_framework import status, viewsets
-from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-from rest_framework.response import Response
+
 from drf_spectacular.utils import extend_schema, extend_schema_view
+from rest_framework import viewsets
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from .models import Player, Team, Tournament
 from .serializers import PlayerSerializer, TeamSerializer, TournamentSerializer
@@ -39,9 +38,7 @@ class TournamentViewSet(viewsets.ModelViewSet):
                 f"Неможливо видалити турнір '{tournament_title}', оскільки до нього прив'язано команд: {instance.teams.count()}."
             )
         instance.delete()
-        logger.info(
-            f'Видалено турнір: "{tournament_title}" (ID: {tournament_id})'
-        )
+        logger.info(f'Видалено турнір: "{tournament_title}" (ID: {tournament_id})')
 
 
 @extend_schema_view(
